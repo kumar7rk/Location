@@ -2,7 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"  android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <TextView
         android:id="@+id/placeName"
         android:layout_width="wrap_content"
@@ -10,4 +12,5 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="PlaceName"
         android:layout_gravity="center_horizontal" />
+</ScrollView>
 </LinearLayout>

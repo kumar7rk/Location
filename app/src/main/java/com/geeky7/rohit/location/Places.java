@@ -55,15 +55,23 @@ public class Places extends Activity {
         Bundle extras = getIntent().getExtras();
         lat = extras.getString("lat");
         lon = extras.getString("lon");
+        String latPlaces = MainActivity.latPlaces.getText().toString();
+        String lonPlaces = MainActivity.lonPlaces.getText().toString();
+        String radiusPlaces = MainActivity.radiusPlaces.getText().toString();
         double mLatitude = -34.923792;
         double mLongitude = 138.6047722;
-//        mLatitude = Double.parseDouble(lat);
-//        mLongitude = Double.parseDouble(lon);
+        int mRadius = 10;
+        mRadius = Integer.parseInt(radiusPlaces);
+        if (!latPlaces.equals("-")&&!lonPlaces.equals("")) {
+            mLatitude = Double.parseDouble(latPlaces);
+            mLongitude = Double.parseDouble(lonPlaces);
+        }
+        Log.i("Places.lat",mLatitude+"");
 
         //jasmin -34.923792 138.6047722
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         sb.append("location=" + mLatitude + "," + mLongitude);
-        sb.append("&radius=10");
+        sb.append("&radius="+radiusPlaces);
         sb.append("&types=" + "restaurant");
         sb.append("&sensor=true");
         sb.append("&key=AIzaSyC0ZdWHP1aun8cfHq9aXzOOztUaD1Fmw_I");
@@ -87,7 +95,8 @@ public class Places extends Activity {
         protected void onPostExecute(String result) {
             ParserTask parserTask = new ParserTask();
             parserTask.execute(result);
-//            textView.setText(result);
+            textView.setText("Nothing Found");
+            MainActivity.updatePlaceName("Nothing Found");
             Log.i("PlacesTask",result);
         }
     }
@@ -146,7 +155,7 @@ public class Places extends Activity {
         protected void onPostExecute(List<HashMap<String, String>> list) {
 
             for (int i = 0; i < list.size(); i++) {
-                HashMap<String, String> hmPlace = list.get(i);
+                HashMap<String, String> hmPlace = list.get(0);
 //                double lat = Double.parseDouble(hmPlace.get("lat"));
 //                double lng = Double.parseDouble(hmPlace.get("lng"));
                 String name = hmPlace.get("place_name");
