@@ -10,24 +10,24 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 
 public class MainActivity extends Activity implements LocationListener {
     TextView latitude,longitude,address;
+    static TextView places;
     Double lat,lon;
-    Button places;
+    Button placesB;
     final int i = 0;
     LocationManager locationManager;
     String provider;
@@ -43,7 +43,8 @@ public class MainActivity extends Activity implements LocationListener {
         latitude = (TextView)findViewById(R.id.lat);
         longitude = (TextView)findViewById(R.id.lon);
         address = (TextView)findViewById(R.id.address);
-        places = (Button)findViewById(R.id.places);
+        places = (TextView)findViewById(R.id.places);
+        placesB = (Button)findViewById(R.id.placesB);
 
         geocoder = new Geocoder(this, Locale.getDefault());
 
@@ -53,14 +54,14 @@ public class MainActivity extends Activity implements LocationListener {
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 i);
 
-        /*LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
         boolean enabled = service
                 .isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         if (!enabled) {
             Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(intent);
-        }*/
+        }
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             locationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER,time,distance, this);
@@ -86,6 +87,8 @@ public class MainActivity extends Activity implements LocationListener {
         }
         try {
             addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+//            addresses = geocoder.getFromLocation(-34.9381429, 138.5002845, 1);
+            //34.9381429,138.5002845 home
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -95,18 +98,22 @@ public class MainActivity extends Activity implements LocationListener {
         String country = addresses.get(0).getCountryName();
         String postalCode = addresses.get(0).getPostalCode();
         String knownName = addresses.get(0).getFeatureName();
-        address.setText(address1 + " \n" + city + "\n" + state + " " + postalCode + "\n" + knownName);
-        places.setOnClickListener(new View.OnClickListener() {
+        address.setText(address1 + " " + city + "\n" + state + " " + postalCode);
+        placesB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), Places.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("lat", lat + "");
-                bundle.putString("lon",lon+"");
+                bundle.putString("lon", lon + "");
                 intent.putExtras(bundle);
-//                intent.putExtra("lon", lon + "");
-                Log.v("MainActivity",lat+","+lon);
                 startActivity(intent);
+                ArrayList<String> arrayList = new ArrayList<String>();
+                arrayList = Places.placeName;
+                if (arrayList.size()>0) {
+                    String name = arrayList.get(0) + "";
+//                    places.setText(name);
+                }
             }
         });
     }
@@ -122,27 +129,6 @@ public class MainActivity extends Activity implements LocationListener {
             }
         }
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onLocationChanged(Location location) {
@@ -150,6 +136,7 @@ public class MainActivity extends Activity implements LocationListener {
         longitude.setText(location.getLongitude()+"");
         try {
             addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+//            addresses = geocoder.getFromLocation(-34.9381429, 138.5002845, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -159,7 +146,7 @@ public class MainActivity extends Activity implements LocationListener {
         String country = addresses.get(0).getCountryName();
         String postalCode = addresses.get(0).getPostalCode();
         String knownName = addresses.get(0).getFeatureName();
-        address.setText(address1 + " \n" + city + "\n" + state + " " + postalCode + "\n" + knownName);
+        address.setText(address1 + " " + city + "\n" + state + " " + postalCode);
     }
 
     @Override
@@ -174,17 +161,13 @@ public class MainActivity extends Activity implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
     }
-
-    /*@Override
-    protected void onResume() {
-        super.onResume();
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-        Toast.makeText(getApplicationContext(),getMethodName(2), Toast.LENGTH_SHORT).show();
-    }*/
-
     public static String getMethodName(final int depth)
     {
         final StackTraceElement[] ste = Thread.currentThread().getStackTrace();
         return ste[1+depth].getMethodName();
+    }
+    public static void updatePlaceName(String name){
+        places.setText(name);
+
     }
 }

@@ -19,18 +19,33 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by Rohit on 1/07/2016.
  */
 public class Places extends Activity {
-
     TextView textView;
+    static ArrayList<String> placeName= new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.places);
-        textView = (TextView)findViewById(R.id.textView);
+        textView = (TextView)findViewById(R.id.placeName);
+        String sb = sbMethod().toString();
+        new PlacesTask().execute(sb);
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                finish();
+            }
+        }, 3000);
+
+    }
+    public void places(){
         String sb = sbMethod().toString();
         new PlacesTask().execute(sb);
     }
@@ -40,12 +55,10 @@ public class Places extends Activity {
         Bundle extras = getIntent().getExtras();
         lat = extras.getString("lat");
         lon = extras.getString("lon");
-        Log.v("Places.java",lat+","+lon);
-
         double mLatitude = -34.923792;
         double mLongitude = 138.6047722;
-        mLatitude = Double.parseDouble(lat);
-        mLongitude = Double.parseDouble(lon);
+//        mLatitude = Double.parseDouble(lat);
+//        mLongitude = Double.parseDouble(lon);
 
         //jasmin -34.923792 138.6047722
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
@@ -54,11 +67,11 @@ public class Places extends Activity {
         sb.append("&types=" + "restaurant");
         sb.append("&sensor=true");
         sb.append("&key=AIzaSyC0ZdWHP1aun8cfHq9aXzOOztUaD1Fmw_I");
-        Log.v("!",sb.toString());
+        Log.v("Places",sb.toString());
         return sb;
     }
 
-    private class PlacesTask extends AsyncTask<String, Integer, String>
+    public class PlacesTask extends AsyncTask<String, Integer, String>
     {
         String data = null;
         @Override
@@ -74,8 +87,8 @@ public class Places extends Activity {
         protected void onPostExecute(String result) {
             ParserTask parserTask = new ParserTask();
             parserTask.execute(result);
-            textView.setText(result);
-            Log.i("!",result);
+//            textView.setText(result);
+            Log.i("PlacesTask",result);
         }
     }
 
@@ -134,15 +147,13 @@ public class Places extends Activity {
 
             for (int i = 0; i < list.size(); i++) {
                 HashMap<String, String> hmPlace = list.get(i);
-                // Getting latitude of the place
-                double lat = Double.parseDouble(hmPlace.get("lat"));
-                // Getting longitude of the place
-                double lng = Double.parseDouble(hmPlace.get("lng"));
-                // Getting name
+//                double lat = Double.parseDouble(hmPlace.get("lat"));
+//                double lng = Double.parseDouble(hmPlace.get("lng"));
                 String name = hmPlace.get("place_name");
-                // Getting vicinity
                 String vicinity = hmPlace.get("vicinity");
-                textView.setText(name + "" + vicinity);
+                MainActivity.updatePlaceName(name);
+                placeName.add(name);
+                textView.setText(name + "\n" + vicinity);
             }
         }
     }
