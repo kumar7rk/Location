@@ -51,6 +51,8 @@ public class MainActivity extends Activity implements LocationListener {
         latPlaces = (EditText)findViewById(R.id.latPlaces);
         lonPlaces = (EditText)findViewById(R.id.lonPlaces);
         radiusPlaces = (EditText)findViewById(R.id.radiusPlaces);
+        latPlaces.setSelection(latPlaces.length());
+        lonPlaces.setSelection(lonPlaces.length());
 
         geocoder = new Geocoder(this, Locale.getDefault());
 

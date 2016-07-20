@@ -42,7 +42,7 @@ public class Places extends Activity {
             public void run() {
                 finish();
             }
-        }, 3000);
+        }, 2000);
 
     }
     public void places(){
@@ -62,11 +62,18 @@ public class Places extends Activity {
         double mLongitude = 138.6047722;
         int mRadius = 10;
         mRadius = Integer.parseInt(radiusPlaces);
-        if (!latPlaces.equals("-")&&!lonPlaces.equals("")) {
+        Log.i("Places.lat,lon place",latPlaces+" " + lonPlaces);
+        if (latPlaces.equals("-34.")&&lonPlaces.equals("138.")) {
+        }
+        else if (latPlaces.equals("")&&lonPlaces.equals("")) {
+            mLatitude = Double.parseDouble(lat);
+            mLongitude = Double.parseDouble(lon);
+        }
+        else{
             mLatitude = Double.parseDouble(latPlaces);
             mLongitude = Double.parseDouble(lonPlaces);
         }
-        Log.i("Places.lat",mLatitude+"");
+        Log.i("Places.mlat,mlon",mLatitude+" " +mLongitude);
 
         //jasmin -34.923792 138.6047722
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
