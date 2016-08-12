@@ -1,4 +1,4 @@
-package com.geeky7.rohit.location;
+package com.geeky7.rohit.location.activity;
 
 import android.app.Activity;
 import android.app.Notification;
@@ -9,6 +9,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+
+import com.geeky7.rohit.location.R;
+import com.geeky7.rohit.location.service.BackgroundService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,26 +39,27 @@ public class Places extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-    //    Places places = new Places();
-        //context = getApplicationContext();
         super.onCreate(savedInstanceState);
-        Intent serviceIntent = new Intent(Places.this,BackgroundService.class);
-        startService(serviceIntent);
         setContentView(R.layout.places);
         textView = (TextView)findViewById(R.id.placeName);
+
+        Intent serviceIntent = new Intent(Places.this,BackgroundService.class);
+        startService(serviceIntent);
+
         String sb = sbMethod().toString();
         new PlacesTask().execute(sb);
+
         Timer t = new Timer();
         t.schedule(new TimerTask() {
             @Override
             public void run() {
                 finish();
             }
-        }, 0);
+        }, 2000);
+
     }
     public void places(){
         Places places = new Places();
-//        Places.context = getApplicationContext();
         String sb = sbMethod().toString();
         new PlacesTask().execute(sb);
     }
@@ -65,25 +69,23 @@ public class Places extends Activity {
     }
     public StringBuilder sbMethod()
     {
-        String lat = "0",lon="0";
+        double mLatitude = -34.923792;
+        double mLongitude = 138.6047722;
+        //jasmin -34.923792 138.6047722
+        int mRadius = 10;
+        Bundle extras = getIntent().getExtras();
 
-        /*Bundle extras = getIntent().getExtras();
+        String lat = "",lon="";
         lat = extras.getString("lat");
-        lon = extras.getString("lon");*/
+        lon = extras.getString("lon");
 
         String latPlaces = MainActivity.latPlaces.getText().toString();
         String lonPlaces = MainActivity.lonPlaces.getText().toString();
         String radiusPlaces = MainActivity.radiusPlaces.getText().toString();
 
-        double mLatitude = -34.923792;
-        double mLongitude = 138.6047722;
-        int mRadius = 10;
-
         mRadius = Integer.parseInt(radiusPlaces);
         Log.i("Places.lat,lon place",latPlaces+" " + lonPlaces);
         if (latPlaces.equals("-34.")&&lonPlaces.equals("138.")) {
-            mLatitude = Double.parseDouble(latPlaces);
-            mLongitude = Double.parseDouble(lonPlaces);
         }
         else if (latPlaces.equals("")&&lonPlaces.equals("")) {
             mLatitude = Double.parseDouble(lat);
@@ -95,7 +97,6 @@ public class Places extends Activity {
         }
         Log.i("Places.mlat,mlon",mLatitude+" " +mLongitude);
 
-        //jasmin -34.923792 138.6047722
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         sb.append("location=" + mLatitude + "," + mLongitude);
         sb.append("&radius="+radiusPlaces);
@@ -105,8 +106,22 @@ public class Places extends Activity {
         Log.v("Places",sb.toString());
         return sb;
     }
+    private void createNotification(String contentTitle, String contentText) {
 
+        NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        //Build the notification using Notification.Builder
+        Notification.Builder builder = new Notification.Builder(getApplicationContext())
+                .setSmallIcon(android.R.drawable.stat_sys_download)
+                .setAutoCancel(true)
+                .setContentTitle(contentTitle)
+                .setContentText(contentText);
+        //Show the notification
+        mNotificationManager.notify(1, builder.build());
+    }
+
+    //PlacesTask class to fetch the name of the places but in raw format
     public class PlacesTask extends AsyncTask<String, Integer, String>
+
     {
         String data = null;
         @Override
@@ -122,23 +137,13 @@ public class Places extends Activity {
         protected void onPostExecute(String result) {
             ParserTask parserTask = new ParserTask(context);
             parserTask.execute(result);
-//            textView.setText("Nothing Found");
-            MainActivity.updatePlaceName("Nothing Found");
+          /*  textView.setText("Nothing Found");
+            MainActivity.updatePlaceName("Nothing Found");*/
             Log.i("PlacesTask", result);
         }
-    }
-    private void createNotification(String contentTitle, String contentText) {
+    }// end of the placesTask class
 
-       NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        //Build the notification using Notification.Builder
-        Notification.Builder builder = new Notification.Builder(getApplicationContext())
-                .setSmallIcon(android.R.drawable.stat_sys_download)
-                .setAutoCancel(true)
-                .setContentTitle(contentTitle)
-                .setContentText(contentText);
-        //Show the notification
-        mNotificationManager.notify(1, builder.build());
-    }
+    // in the main class
     private String downloadUrl(String strUrl) throws IOException
     {
         String data = "";
@@ -204,12 +209,13 @@ public class Places extends Activity {
                 String vicinity = hmPlace.get("vicinity");
                 MainActivity.updatePlaceName(name);
                 placeName.add(name);
-               // textView.setText(name + "\n" + vicinity);
+                textView.setText(name + "\n" + vicinity);
 //                Toast.makeText(mContext, name, Toast.LENGTH_SHORT).show();
 
             }
         }
-    }
+    }// end of the parserTask class
+
     public class Place_JSON {
 
         /**

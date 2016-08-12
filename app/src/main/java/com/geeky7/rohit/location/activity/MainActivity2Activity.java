@@ -1,8 +1,9 @@
-package com.geeky7.rohit.location;
+package com.geeky7.rohit.location.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.geeky7.rohit.location.R;
 import com.roughike.bottombar.BottomBar;
 
 

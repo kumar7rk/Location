@@ -1,4 +1,4 @@
-package com.geeky7.rohit.location;
+package com.geeky7.rohit.location.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -20,44 +20,55 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.geeky7.rohit.location.Main;
+import com.geeky7.rohit.location.R;
+import com.geeky7.rohit.location.service.BackgroundService;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
 public class MainActivity extends Activity implements LocationListener {
     static Activity thisActivity = null;
+    static MainActivity mainActivity;
+
     private static String latPlacesS,lonPlacesS;
+    private Double lat,lon;
+    private String provider;
+    private final int permissionVariable = 0;
+    private static long time = 1;
+    private static long distance = 1;
+    private static int NOTIFICATION_ID = 1;
+
     TextView latitude,longitude,address;
     static TextView places;
     static EditText latPlaces,lonPlaces,radiusPlaces;
-    Double lat,lon;
     Button placesB;
-    final int i = 0;
+
+
     LocationManager locationManager;
-    String provider;
     Location location;
-    static long time = 1;
-    static long distance = 1;
     Geocoder geocoder;
     List<Address> addresses;
-    static MainActivity mainActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mainActivity = new MainActivity();
-        findViews();
+
         thisActivity = this;
+        mainActivity = new MainActivity();
 
+        findViews();
         checkPermission();
-        Intent serviceIntent = new Intent(MainActivity.this,BackgroundService.class);
-        startService(serviceIntent);
+        startService();
 
-        geocoder = new Geocoder(this, Locale.getDefault());
         LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
+        geocoder = new Geocoder(this, Locale.getDefault());
+
         boolean enabled = openLocationSettings(service);
+
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER, time, distance, this);
@@ -87,32 +98,35 @@ public class MainActivity extends Activity implements LocationListener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String address1 = addresses.get(0).getAddressLine(0);
-            String city = addresses.get(0).getLocality();
-            String state = addresses.get(0).getAdminArea();
-            String country = addresses.get(0).getCountryName();
-            String postalCode = addresses.get(0).getPostalCode();
-            String knownName = addresses.get(0).getFeatureName();
-            address.setText(address1 + " " + city + "\n" + state + " " + postalCode);
+
+            setAddress();
         }
             placesB.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+//                    ArrayList<String> arrayList = new ArrayList<String>();
                     Intent intent = new Intent(getApplicationContext(), Places.class);
                     Bundle bundle = new Bundle();
+
                     bundle.putString("lat", lat + "");
                     bundle.putString("lon", lon + "");
+
                     intent.putExtras(bundle);
+
                     startActivity(intent);
-                    ArrayList<String> arrayList = new ArrayList<String>();
-                    arrayList = Places.placeName;
+
+                    /*arrayList = Places.placeName;
+
                     if (arrayList.size() > 0) {
                         String name = arrayList.get(0) + "";
-                    }
+                    }*/
                 }
             });
-        Places places = new Places();
-        places.placesS();
+    }
+
+    private void startService() {
+        Intent serviceIntent = new Intent(MainActivity.this,BackgroundService.class);
+        startService(serviceIntent);
     }
 
     private boolean openLocationSettings(LocationManager service) {
@@ -130,7 +144,7 @@ public class MainActivity extends Activity implements LocationListener {
                 Manifest.permission.ACCESS_FINE_LOCATION);
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                i);
+                permissionVariable);
     }
 
     private void findViews() {
@@ -150,7 +164,7 @@ public class MainActivity extends Activity implements LocationListener {
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case i: {
+            case permissionVariable: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED)
@@ -167,16 +181,20 @@ public class MainActivity extends Activity implements LocationListener {
         bundle.putString("lon", location.getLongitude() + "");
         intent.putExtras(bundle);
         startActivity(intent);*/
-        Places places = new Places();
-        places.places();
+
         latitude.setText(location.getLatitude() + "");
         longitude.setText(location.getLongitude() + "");
-        Toast.makeText(getApplicationContext(), "NewCoordinates: "+location.getLatitude()+"\n"+location.getLongitude(), Toast.LENGTH_SHORT).show();
+
+        Main.showToast(getApplicationContext(), "NewCoordinates: "+location.getLatitude()+"\n"+location.getLongitude());
         try {
             addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        setAddress();
+    }
+
+    private void setAddress() {
         String address1 = addresses.get(0).getAddressLine(0);
         String city = addresses.get(0).getLocality();
         String state = addresses.get(0).getAdminArea();
@@ -198,30 +216,23 @@ public class MainActivity extends Activity implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
     }
-    public static String getMethodName(final int depth)
-    {
-        final StackTraceElement[] ste = Thread.currentThread().getStackTrace();
-        return ste[1+depth].getMethodName();
-    }
+
     public static void updatePlaceName(String name){
         places.setText(name);
-        MainActivity.showToast(thisActivity,name);
-//        mainActivity.createNotification(name, name);
-    }
-    public static void showToast(Context context, String text) {
-        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
-    }
+        Main.showToast(thisActivity, name);
+        new MainActivity().createNotification(name, name, thisActivity);
 
-    private void createNotification(String contentTitle, String contentText) {
+    }
+    public void createNotification(String contentTitle, String contentText,Context context) {
 
-        NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         //Build the notification using Notification.Builder
-        Notification.Builder builder = new Notification.Builder(getApplicationContext())
+        Notification.Builder builder = new Notification.Builder(context)
                 .setSmallIcon(android.R.drawable.stat_sys_download)
                 .setAutoCancel(true)
                 .setContentTitle(contentTitle)
                 .setContentText(contentText);
         //Show the notification
-        mNotificationManager.notify(1, builder.build());
+        NotificationManager mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        mNotificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 }
