@@ -62,24 +62,20 @@ public class MainActivity extends Activity implements LocationListener {
 
         findViews();
         checkPermission();
-        startService();
-
-        LocationManager service = (LocationManager) getSystemService(LOCATION_SERVICE);
-        geocoder = new Geocoder(this, Locale.getDefault());
-
-        boolean enabled = openLocationSettings(service);
+       // startService();
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        geocoder = new Geocoder(this, Locale.getDefault());
+
+        boolean enabled = openLocationSettings(locationManager);
         locationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER, time, distance, this);
 
         if (locationManager != null) {
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            if (location != null) {
-                lat = location.getLatitude();
-                lon = location.getLongitude();
-                latitude.setText(location.getLatitude() + "");
-                longitude.setText(location.getLongitude() + "");
+            if (location != null){
+                getCoordinates();
+                setCoordinates();
             }
         }
         if (location == null) {
@@ -87,8 +83,8 @@ public class MainActivity extends Activity implements LocationListener {
             if (locationManager != null) {
                 location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 if (location != null) {
-                    latitude.setText(location.getLatitude() + "");
-                    longitude.setText(location.getLongitude() + "");
+                    getCoordinates();
+                    setCoordinates();
                 }
             }
         }
@@ -104,24 +100,26 @@ public class MainActivity extends Activity implements LocationListener {
             placesB.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                    ArrayList<String> arrayList = new ArrayList<String>();
                     Intent intent = new Intent(getApplicationContext(), Places.class);
                     Bundle bundle = new Bundle();
 
                     bundle.putString("lat", lat + "");
                     bundle.putString("lon", lon + "");
-
                     intent.putExtras(bundle);
 
                     startActivity(intent);
-
-                    /*arrayList = Places.placeName;
-
-                    if (arrayList.size() > 0) {
-                        String name = arrayList.get(0) + "";
-                    }*/
                 }
             });
+    }
+
+    private void setCoordinates() {
+        latitude.setText(lat + "");
+        longitude.setText(lon + "");
+    }
+
+    private void getCoordinates() {
+        lat = location.getLatitude();
+        lon = location.getLongitude();
     }
 
     private void startService() {
@@ -175,19 +173,14 @@ public class MainActivity extends Activity implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        /*Intent intent = new Intent(getApplicationContext(), Places.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("lat", location.getLatitude() + "");
-        bundle.putString("lon", location.getLongitude() + "");
-        intent.putExtras(bundle);
-        startActivity(intent);*/
 
-        latitude.setText(location.getLatitude() + "");
-        longitude.setText(location.getLongitude() + "");
+        getCoordinates();
+        latitude.setText(lat + "");
+        longitude.setText(lon + "");
 
-        Main.showToast(getApplicationContext(), "NewCoordinates: "+location.getLatitude()+"\n"+location.getLongitude());
+        Main.showToast(getApplicationContext(), "NewCoordinates: "+lat+"\n"+lon);
         try {
-            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            addresses = geocoder.getFromLocation(lat, lon, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -225,13 +218,11 @@ public class MainActivity extends Activity implements LocationListener {
     }
     public void createNotification(String contentTitle, String contentText,Context context) {
 
-        //Build the notification using Notification.Builder
         Notification.Builder builder = new Notification.Builder(context)
                 .setSmallIcon(android.R.drawable.stat_sys_download)
                 .setAutoCancel(true)
                 .setContentTitle(contentTitle)
                 .setContentText(contentText);
-        //Show the notification
         NotificationManager mNotificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         mNotificationManager.notify(NOTIFICATION_ID, builder.build());
     }

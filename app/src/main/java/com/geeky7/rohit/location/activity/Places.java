@@ -69,22 +69,24 @@ public class Places extends Activity {
     }
     public StringBuilder sbMethod()
     {
+        //jasmin -34.923792 138.6047722
         double mLatitude = -34.923792;
         double mLongitude = 138.6047722;
-        //jasmin -34.923792 138.6047722
         int mRadius = 10;
-        Bundle extras = getIntent().getExtras();
-
         String lat = "",lon="";
+
+        Bundle extras = getIntent().getExtras();
         lat = extras.getString("lat");
         lon = extras.getString("lon");
 
+        //Manually added coordinates in MainActivity.java
         String latPlaces = MainActivity.latPlaces.getText().toString();
         String lonPlaces = MainActivity.lonPlaces.getText().toString();
         String radiusPlaces = MainActivity.radiusPlaces.getText().toString();
-
         mRadius = Integer.parseInt(radiusPlaces);
+
         Log.i("Places.lat,lon place",latPlaces+" " + lonPlaces);
+
         if (latPlaces.equals("-34.")&&lonPlaces.equals("138.")) {
         }
         else if (latPlaces.equals("")&&lonPlaces.equals("")) {
