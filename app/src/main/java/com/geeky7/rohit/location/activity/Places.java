@@ -39,7 +39,7 @@ public class Places extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
+                super.onCreate(savedInstanceState);
         setContentView(R.layout.places);
         textView = (TextView)findViewById(R.id.placeName);
 
@@ -137,7 +137,7 @@ public class Places extends Activity {
         }
         @Override
         protected void onPostExecute(String result) {
-            ParserTask parserTask = new ParserTask(context);
+            ParserTask parserTask = new ParserTask( context);
             parserTask.execute(result);
           /*  textView.setText("Nothing Found");
             MainActivity.updatePlaceName("Nothing Found");*/
@@ -154,7 +154,7 @@ public class Places extends Activity {
         try {
             URL url = new URL(strUrl);
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.connect();
+            urlConnection.connect();iStream = urlConnection.getInputStream();
             iStream = urlConnection.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
             StringBuffer sb = new StringBuffer();
