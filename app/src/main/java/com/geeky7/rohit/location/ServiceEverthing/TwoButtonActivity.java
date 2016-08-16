@@ -11,6 +11,7 @@ import com.geeky7.rohit.location.R;
 public class TwoButtonActivity extends Activity {
 
     Button startServiceB,stopServiceB;
+    boolean running = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,9 +22,8 @@ public class TwoButtonActivity extends Activity {
         startServiceB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent serviceIntent = new Intent(TwoButtonActivity.this, BackgroundService.class);
-                startService(serviceIntent);
-
+                if(!running)
+                    startService();
             }
         });
         stopServiceB.setOnClickListener(new View.OnClickListener() {
@@ -31,9 +31,16 @@ public class TwoButtonActivity extends Activity {
             public void onClick(View v) {
                 Intent serviceIntent = new Intent(TwoButtonActivity.this, BackgroundService.class);
                 stopService(serviceIntent);
+                running = false;
             }
         });
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private void startService() {
         Intent serviceIntent = new Intent(TwoButtonActivity.this, BackgroundService.class);
         startService(serviceIntent);

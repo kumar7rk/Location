@@ -50,8 +50,10 @@ GoogleApiClient.ConnectionCallbacks,LocationListener{
     static Context context;
 
     // current == 1 minute
-    private int mInterval = 60000; // 5 seconds by default, can be changed later
+    private int mInterval = 5000; // 5 seconds by default, can be changed later
     private Handler mHandler;
+
+
 
     public BackgroundService() {
     }
@@ -79,7 +81,7 @@ GoogleApiClient.ConnectionCallbacks,LocationListener{
 
         Main.showToast(getApplicationContext(), "Service Created");
 
-        mRequestingLocationUpdates = false;
+//        mRequestingLocationUpdates = false;
         mLastUpdateTime = "";
 
         buildGoogleApiClient();
@@ -87,6 +89,7 @@ GoogleApiClient.ConnectionCallbacks,LocationListener{
         mGoogleApiClient.connect();
         if(mGoogleApiClient.isConnected()&&mRequestingLocationUpdates)
             startLocationupdates();
+
         mHandler = new Handler();
         startRepeatingTask();
     }
@@ -99,6 +102,7 @@ GoogleApiClient.ConnectionCallbacks,LocationListener{
         if (mGoogleApiClient.isConnected())
             stopLocationupdates();
         mGoogleApiClient.disconnect();
+        stopRepeatingTask();
     }
 
     @Override
@@ -170,8 +174,8 @@ GoogleApiClient.ConnectionCallbacks,LocationListener{
         double mLatitude = -34.923792;
         double mLongitude = 138.6047722;
         int mRadius = 50;
-        mLatitude = mCurrentLocation.getLatitude();
-        mLongitude = mCurrentLocation.getLongitude();
+/*        mLatitude = mCurrentLocation.getLatitude();
+        mLongitude = mCurrentLocation.getLongitude();*/
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         sb.append("location=" + mLatitude + "," + mLongitude);
         sb.append("&radius="+mRadius);
