@@ -7,4 +7,6 @@
     <string name="title_activity_my">MyActivity</string>
     <string name="title_activity_two_buttons">TwoButtonsActivity</string>
     <string name="title_activity_two_button">TwoButtonActivity</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

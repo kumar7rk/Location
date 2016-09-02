@@ -1,4 +1,4 @@
-package com.geeky7.rohit.location;
+package com.geeky7.rohit.locations;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

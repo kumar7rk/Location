@@ -1,4 +1,4 @@
-package com.geeky7.rohit.location.activity;
+package com.geeky7.rohit.locations.activity;
 
 import android.app.Activity;
 import android.app.Notification;
@@ -10,8 +10,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.geeky7.rohit.location.R;
-import com.geeky7.rohit.location.service.BackgroundService;
+import com.geeky7.rohit.locations.R;
+import com.geeky7.rohit.locations.service.BackgroundService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -72,20 +72,24 @@ public class Places extends Activity {
         //jasmin -34.923792 138.6047722
         double mLatitude = -34.923792;
         double mLongitude = 138.6047722;
-        int mRadius = 10;
-        String lat = "",lon="";
+        int mRadius = 50;
+        String lat = "",lon="",radius = "";
 
         Bundle extras = getIntent().getExtras();
         lat = extras.getString("lat");
         lon = extras.getString("lon");
+        radius = extras.getString("radius");
 
+        mLatitude = Double.parseDouble(lat);
+        mLongitude = Double.parseDouble(lon);
+        mRadius = Integer.parseInt(radius);
         //Manually added coordinates in MainActivity.java
-        String latPlaces = MainActivity.latPlaces.getText().toString();
+        /*String latPlaces = MainActivity.latPlaces.getText().toString();
         String lonPlaces = MainActivity.lonPlaces.getText().toString();
         String radiusPlaces = MainActivity.radiusPlaces.getText().toString();
-        mRadius = Integer.parseInt(radiusPlaces);
+        mRadius = Integer.parseInt(radiusPlaces);*/
 
-        Log.i("Places.lat,lon place",latPlaces+" " + lonPlaces);
+/*        Log.i("Places.lat,lon place",latPlaces+" " + lonPlaces);
 
         if (latPlaces.equals("-34.")&&lonPlaces.equals("138.")) {
         }
@@ -96,13 +100,13 @@ public class Places extends Activity {
         else{
             mLatitude = Double.parseDouble(latPlaces);
             mLongitude = Double.parseDouble(lonPlaces);
-        }
+        }*/
         Log.i("Places.mlat,mlon",mLatitude+" " +mLongitude);
 
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         sb.append("location=" + mLatitude + "," + mLongitude);
-        sb.append("&radius="+radiusPlaces);
-        sb.append("&types=" + "restaurant");
+        sb.append("&radius="+mRadius);
+//        sb.append("&types=" + "restaurant");
         sb.append("&sensor=true");
         sb.append("&key=AIzaSyC0ZdWHP1aun8cfHq9aXzOOztUaD1Fmw_I");
         Log.v("Places",sb.toString());

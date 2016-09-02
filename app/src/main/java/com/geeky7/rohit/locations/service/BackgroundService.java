@@ -1,4 +1,4 @@
-package com.geeky7.rohit.location.service;
+package com.geeky7.rohit.locations.service;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

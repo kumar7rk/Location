@@ -1,4 +1,4 @@
-package com.geeky7.rohit.location.activity;
+package com.geeky7.rohit.locations.activity;
 
 import android.Manifest;
 import android.app.Activity;
@@ -21,9 +21,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.geeky7.rohit.location.Main;
-import com.geeky7.rohit.location.R;
-import com.geeky7.rohit.location.service.BackgroundService;
+import com.geeky7.rohit.locations.Main;
+import com.geeky7.rohit.locations.R;
+import com.geeky7.rohit.locations.service.BackgroundService;
 
 import java.io.IOException;
 import java.util.List;
@@ -55,14 +55,14 @@ public class MainActivity extends Activity implements LocationListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_main);
 
+        setContentView(R.layout.activity_main);
         thisActivity = this;
         mainActivity = new MainActivity();
 
         findViews();
         checkPermission();
-       // startService();
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         geocoder = new Geocoder(this, Locale.getDefault());
@@ -105,6 +105,7 @@ public class MainActivity extends Activity implements LocationListener {
 
                     bundle.putString("lat", lat + "");
                     bundle.putString("lon", lon + "");
+                    bundle.putString("radius",radiusPlaces.getText().toString()+"");
                     intent.putExtras(bundle);
 
                     startActivity(intent);
@@ -213,7 +214,7 @@ public class MainActivity extends Activity implements LocationListener {
     public static void updatePlaceName(String name){
         places.setText(name);
         Main.showToast(thisActivity, name);
-        new MainActivity().createNotification(name, name, thisActivity);
+//        new MainActivity().createNotification(name, name, thisActivity);
 
     }
     public void createNotification(String contentTitle, String contentText,Context context) {

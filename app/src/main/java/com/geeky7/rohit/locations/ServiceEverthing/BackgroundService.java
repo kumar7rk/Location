@@ -1,4 +1,4 @@
-package com.geeky7.rohit.location.ServiceEverthing;
+package com.geeky7.rohit.locations.ServiceEverthing;
 
 import android.app.Service;
 import android.content.Context;
@@ -11,7 +11,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.geeky7.rohit.location.Main;
+import com.geeky7.rohit.locations.Main;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -173,9 +173,9 @@ GoogleApiClient.ConnectionCallbacks,LocationListener{
     {
         double mLatitude = -34.923792;
         double mLongitude = 138.6047722;
-        int mRadius = 50;
-/*        mLatitude = mCurrentLocation.getLatitude();
-        mLongitude = mCurrentLocation.getLongitude();*/
+        int mRadius = 100;
+        mLatitude = mCurrentLocation.getLatitude();
+        mLongitude = mCurrentLocation.getLongitude();
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         sb.append("location=" + mLatitude + "," + mLongitude);
         sb.append("&radius="+mRadius);

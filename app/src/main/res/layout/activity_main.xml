@@ -77,7 +77,7 @@
         android:layout_toRightOf="@+id/latPlaces"
         android:layout_marginLeft="84dp"
         android:layout_marginStart="84dp"
-        android:text="10"
+        android:text="50"
         android:layout_gravity="right" />
 
     <EditText

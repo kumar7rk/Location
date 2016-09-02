@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.geeky7.rohit.location" >
+    package="com.geeky7.rohit.locations" >
 
     <uses-sdk android:targetSdkVersion="18" />
 
@@ -16,7 +16,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name" >
         <activity
-            android:name=".ServiceEverthing.TwoButtonActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,17 +27,6 @@
         <activity
             android:name=".activity.Places"
             android:label="Places" />
-
-        <service
-            android:name=".service.BackgroundService"
-            android:enabled="true"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="ACTION_SERVICE" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </service>
 
         <service
             android:name=".ServiceEverthing.BackgroundService"
